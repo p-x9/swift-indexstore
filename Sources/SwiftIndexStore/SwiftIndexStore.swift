@@ -228,6 +228,48 @@ public final class IndexStore {
         }
     }
 
+    public func forEachOccurrences(
+        for record: IndexStoreUnit.Dependency.Record,
+        inLineRange lineRange: ClosedRange<Int>,
+        language: IndexStoreSymbol.Language? = nil,
+        _ next: (IndexStoreOccurrence) throws -> Bool) throws {
+        guard let reader = try lib.throwsfy({ lib.record_reader_create(store, record.name, &$0) }) else {
+            throw IndexStoreError.unableCreateRecordReader(record.name)
+        }
+        defer { lib.record_reader_dispose(reader) }
+        typealias Ctx = Context<(
+            next: (IndexStoreOccurrence) throws -> Bool,
+            recordPath: String?,
+            isSystem: Bool,
+            language: UInt32?
+        )>
+
+        let lineStart: CUnsignedInt = numericCast(lineRange.lowerBound)
+        let lineCount: CUnsignedInt = numericCast(lineRange.count)
+
+        try withoutActuallyEscaping(next) { next in
+            let handler = Ctx((next, record.filePath, record.isSystem, language?.rawValue), lib: lib)
+            let ctx = Unmanaged.passUnretained(handler).toOpaque()
+            _ = lib.record_reader_occurrences_in_line_range_apply_f(reader, lineStart, lineCount, ctx) { ctx, occurrence -> Bool in
+                let ctx = Unmanaged<Ctx>.fromOpaque(ctx!).takeUnretainedValue()
+                guard let occ = IndexStore.createOccurrence(
+                    from: occurrence,
+                    recordPath: ctx.content.recordPath,
+                    isSystem: ctx.content.isSystem,
+                    language: ctx.content.language,
+                    lib: ctx.lib
+                ) else { return true }
+                do { return try ctx.content.next(occ) } catch {
+                    ctx.error = error
+                    return false
+                }
+            }
+            if let error = handler.error {
+                throw error
+            }
+        }
+    }
+
     public func forEachRelations(for occ: IndexStoreOccurrence, _ next: (IndexStoreRelation) throws -> Bool) rethrows {
         typealias Ctx = Context<((IndexStoreRelation) throws -> Bool)>
         try withoutActuallyEscaping(next) { next in
