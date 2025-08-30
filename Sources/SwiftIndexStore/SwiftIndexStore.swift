@@ -72,9 +72,29 @@ public final class IndexStore {
         return lib.unit_reader_get_module_name(reader).toSwiftString()
     }
 
+    public func workingDir(for unit: IndexStoreUnit) throws -> String? {
+        let reader = try createUnitReader(for: unit)
+        return lib.unit_reader_get_working_dir(reader).toSwiftString()
+    }
+
+    public func outputFile(for unit: IndexStoreUnit) throws -> String? {
+        let reader = try createUnitReader(for: unit)
+        return lib.unit_reader_get_output_file(reader).toSwiftString()
+    }
+
+    public func sysrootPath(for unit: IndexStoreUnit) throws -> String? {
+        let reader = try createUnitReader(for: unit)
+        return lib.unit_reader_get_sysroot_path(reader).toSwiftString()
+    }
+
     public func target(for unit: IndexStoreUnit) throws -> String? {
         let reader = try createUnitReader(for: unit)
         return lib.unit_reader_get_target(reader).toSwiftString()
+    }
+
+    public func isDebugCompilation(for unit: IndexStoreUnit) throws -> Bool {
+        let reader = try createUnitReader(for: unit)
+        return lib.unit_reader_is_debug_compilation(reader)
     }
 
     // - MARK: ForEach Functions
