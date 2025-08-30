@@ -364,10 +364,16 @@ public final class IndexStore {
         let symbolUsr = lib.symbol_get_usr(symbol).toSwiftString()
         let symbolName = lib.symbol_get_name(symbol).toSwiftString()
         let symbolLanguage = IndexStoreSymbol.Language(rawValue: language ?? lib.symbol_get_language(symbol).rawValue)!
+        let symbolProperties = IndexStoreSymbol.Property(
+            rawValue: lib.symbol_get_properties(symbol)
+        )
+        let symbolCodegenName = lib.symbol_get_codegen_name(symbol).toSwiftString()
         return IndexStoreSymbol(
             usr: symbolUsr, name: symbolName,
             kind: symbolKind, subKind: symbolSubKind,
             language: symbolLanguage,
+            properties: symbolProperties,
+            codegenName: symbolCodegenName,
             anchor: symbol
         )
     }

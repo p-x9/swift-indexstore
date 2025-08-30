@@ -63,7 +63,7 @@ public struct IndexStoreSymbol {
     }
 
     public struct Property: OptionSet, Hashable, OptionSetDisplayable, CustomStringConvertible {
-        public let rawValue: UInt32
+        public let rawValue: UInt64
 
         public static let generic = Property(rawValue: INDEXSTORE_SYMBOL_PROPERTY_GENERIC)
         public static let templatePartialSpecialization = Property(rawValue: INDEXSTORE_SYMBOL_PROPERTY_TEMPLATE_PARTIAL_SPECIALIZATION)
@@ -76,12 +76,12 @@ public struct IndexStoreSymbol {
         public static let protocolInterface = Property(rawValue: INDEXSTORE_SYMBOL_PROPERTY_PROTOCOL_INTERFACE)
         public static let swiftAsync = Property(rawValue: INDEXSTORE_SYMBOL_PROPERTY_SWIFT_ASYNC)
 
-        public init(rawValue: UInt32) {
+        public init(rawValue: UInt64) {
             self.rawValue = rawValue
         }
 
         init(rawValue: indexstore_symbol_property_t) {
-            self.rawValue = rawValue.rawValue
+            self.rawValue = UInt64(rawValue.rawValue)
         }
 
         static let debugDescriptors: [(option: IndexStoreSymbol.Property, name: String)] = [
@@ -114,6 +114,8 @@ public struct IndexStoreSymbol {
     public var kind: Kind
     public var subKind: SubKind
     public var language: Language
+    public var properties: Property
+    public var codegenName: String?
 
     let anchor: indexstore_symbol_t?
 }

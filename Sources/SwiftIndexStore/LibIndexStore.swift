@@ -62,6 +62,8 @@ public class LibIndexStore {
         api.symbol_get_subkind = try requireSym(dylib, "indexstore_symbol_get_subkind")
         api.symbol_get_usr = try requireSym(dylib, "indexstore_symbol_get_usr")
         api.symbol_get_name = try requireSym(dylib, "indexstore_symbol_get_name")
+        api.symbol_get_properties = try requireSym(dylib, "indexstore_symbol_get_properties")
+        api.symbol_get_codegen_name = try requireSym(dylib, "indexstore_symbol_get_codegen_name")
         api.occurrence_get_line_col = try requireSym(dylib, "indexstore_occurrence_get_line_col")
         api.error_get_description = try requireSym(dylib, "indexstore_error_get_description")
         api.occurrence_relations_apply_f = try requireSym(dylib, "indexstore_occurrence_relations_apply_f")
